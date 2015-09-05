@@ -11,6 +11,7 @@
 
 namespace Nelmio\Alice\Instances\Processor\Methods;
 
+use Faker\Factory;
 use Nelmio\Alice\Instances\Collection;
 use Nelmio\Alice\Instances\Processor\ProcessableInterface;
 
@@ -22,7 +23,8 @@ class Faker implements MethodInterface
     protected $objects;
 
     /**
-     * Custom faker providers to use with faker generator
+     * Custom faker providers to use with Faker generators. Is kept as a property as faker generators are generated
+     * on the fly.
      *
      * @var array
      */
@@ -31,10 +33,10 @@ class Faker implements MethodInterface
     /**
      * @var \Faker\Generator[]
      */
-    private $generators;
+    private $generators = [];
 
     /**
-     * Default locale to use with faker
+     * Default locale to use for Faker generators.
      *
      * @var string
      */
@@ -45,6 +47,10 @@ class Faker implements MethodInterface
      */
     private $valueForCurrent;
 
+    /**
+     * @param object[] $providers Faker providers.
+     * @param string   $locale
+     */
     public function __construct(array $providers, $locale = 'en_US')
     {
         $this->providers     = $providers;
@@ -52,9 +58,9 @@ class Faker implements MethodInterface
     }
 
     /**
-     * sets the object collection to handle referential calls
+     * Sets the object collection to handle referential calls.
      *
-     * @param Collection
+     * @param Collection $objects
      */
     public function setObjects(Collection $objects)
     {
@@ -62,7 +68,7 @@ class Faker implements MethodInterface
     }
 
     /**
-     * sets the value for <current()>
+     * Sets the value for <current()>.
      *
      * @param string
      */
@@ -72,14 +78,14 @@ class Faker implements MethodInterface
     }
 
     /**
-     * sets the providers that can be used
+     * Sets the providers that can be used.
      *
      * @param array
      */
     public function setProviders(array $providers)
     {
-        $this->providers = $providers;
-        $this->generators = [];
+        $this->providers = [];
+        $this->addProvider($providers);
     }
 
     /**
@@ -89,13 +95,12 @@ class Faker implements MethodInterface
      */
     public function addProvider($provider)
     {
-        if (!is_array($provider)) {
-            $provider = [$provider];
-        }
-        foreach ($provider as $p) {
-            $this->providers[] = $p;
+        $providers = is_array($provider)? $provider: [$provider];
+
+        foreach ($providers as $provider) {
+            $this->providers[] = $provider;
             foreach ($this->generators as $generator) {
-                $generator->addProvider($p);
+                $generator->addProvider($provider);
             }
         }
     }
@@ -125,7 +130,7 @@ class Faker implements MethodInterface
     }
 
     /**
-     * replaces a placeholder by the result of a ->fake call
+     * Replaces a placeholder by the result of a ->fake call.
      *
      * @param  array $matches
      * @param  array $variables
@@ -184,10 +189,10 @@ class Faker implements MethodInterface
     }
 
     /**
-     * Returns a fake value
+     * Returns a fake value.
      *
      * This is made public so it is accessible by the $fake() callback in replacePlaceholder
-     * and the callback in Parser\Method\Base::createFakerClosure
+     * and the callback in Parser\Method\Base::createFakerClosure.
      *
      * @param  string $formatter
      * @param  string $locale
@@ -210,7 +215,7 @@ class Faker implements MethodInterface
     }
 
     /**
-     * Get the generator for this locale
+     * Gets the generator for this locale.
      *
      * @param string $locale the requested locale, defaults to constructor injected default
      *
@@ -221,7 +226,7 @@ class Faker implements MethodInterface
         $locale = $locale ?: $this->defaultLocale;
 
         if (!isset($this->generators[$locale])) {
-            $generator = \Faker\Factory::create($locale);
+            $generator = Factory::create($locale);
             foreach ($this->providers as $provider) {
                 $generator->addProvider($provider);
             }
