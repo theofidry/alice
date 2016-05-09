@@ -53,9 +53,16 @@ final class ParserRegistry implements ParserInterface
     public function parse(string $file): array
     {
         foreach ($this->parsers as $parser) {
-            if ($parser->canParse($file)) {
-                return $parser->parse($file);
+            if (false === $parser->canParse($file)) {
+                continue;
             }
+            
+            $data = $parser->parse($file);
+            $data['meta'] = [
+                'file' => $file
+            ];
+            
+            return $data;
         }
         
         throw new RuntimeException(
