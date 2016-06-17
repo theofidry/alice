@@ -2,9 +2,15 @@
 
 /*
  * This file is part of the Alice package.
+<<<<<<< 3f2b33e2d4282e8f9a64104dea4181d255a7e9ad
  *  
  * (c) Nelmio <hello@nelm.io>
  *  
+=======
+ *
+ * (c) Nelmio <hello@nelm.io>
+ *
+>>>>>>> WIP
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -43,7 +49,7 @@ class TemplatingFixtureBagTest extends \PHPUnit_Framework_TestCase
                 (new FlagBag('user_base'))->with(new TemplateFlag())
             )
         );
-        
+
         $bag = (new TemplatingFixtureBag())
             ->with($fixture)
             ->with($template)
