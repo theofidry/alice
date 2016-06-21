@@ -12,6 +12,7 @@
 namespace Nelmio\Alice;
 
 use Nelmio\Alice\Definition\Object\SimpleObject;
+use Nelmio\Alice\Exception\ObjectNotFoundException;
 
 /**
  * Value object containing a list of objects.
@@ -22,9 +23,19 @@ final class ObjectBag implements \IteratorAggregate
 
     public function __construct(array $objects = [])
     {
-        foreach ($objects as $reference => $object) {
-            $this->objects[$reference] = new SimpleObject($reference, $object);
+        foreach ($objects as $className => $classObjects) {
+            if (false === is_array($className)) {
+                throw new \TypeError(
+                    'TODO'
+                );
+            }
+            
+            $this->objects[$className] = [];
+            foreach ($classObjects as $reference => $object) {
+                $this->objects[$reference] = new SimpleObject($reference, $object);
+            }
         }
+
     }
 
     /**
@@ -60,6 +71,32 @@ final class ObjectBag implements \IteratorAggregate
         }
         
         return $clone;
+    }
+    
+    public function has(FixtureInterface $fixture): bool
+    {
+        $className = $fixture->getClassName();
+        $reference = $fixture->getReference();
+        
+        return isset($this->objects[$className][$reference]);
+    }
+
+    /**
+     * @param FixtureInterface $fixture
+     *
+     * @throws ObjectNotFoundException
+     * 
+     * @return ObjectInterface
+     */
+    public function get(FixtureInterface $fixture): ObjectInterface
+    {
+        $className = $fixture->getClassName();
+        $reference = $fixture->getReference();
+        if (isset($this->objects[$className][$reference])) {
+            return $this->objects[$className][$reference];
+        }
+        
+        throw ObjectNotFoundException::create($reference, $className);
     }
 
     /**
