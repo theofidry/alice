@@ -42,6 +42,16 @@ class NoMethodCallTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \DomainException
+     * @expectedExceptionMessage By its nature, "Nelmio\Alice\Definition\MethodCall\NoMethodCall::getCaller()" should not be called.
+     */
+    public function testCannotGetCaller()
+    {
+        $call = new NoMethodCall();
+        $call->getCaller();
+    }
+
+    /**
+     * @expectedException \DomainException
      * @expectedExceptionMessage By its nature, "Nelmio\Alice\Definition\MethodCall\NoMethodCall::getMethod()" should not be called.
      */
     public function testCannotGetMethod()
@@ -54,9 +64,9 @@ class NoMethodCallTest extends \PHPUnit_Framework_TestCase
      * @expectedException \DomainException
      * @expectedExceptionMessage By its nature, "Nelmio\Alice\Definition\MethodCall\NoMethodCall::getCaller()" should not be called.
      */
-    public function testCannotGetCaller()
+    public function testCannotGetArguments()
     {
         $call = new NoMethodCall();
-        $call->getCaller();
+        $call->getArguments();
     }
 }
