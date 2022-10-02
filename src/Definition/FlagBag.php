@@ -16,8 +16,8 @@ namespace Nelmio\Alice\Definition;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Traversable;
 use function Nelmio\Alice\deep_clone;
+use Traversable;
 
 /**
  * Collection of flags.
